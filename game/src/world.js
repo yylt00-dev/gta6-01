@@ -28,15 +28,32 @@ export function buildCity(rng) {
   const buildings = [];
   const trees = [];
   const roadW = ROADS.width;
-  const xs = [60, ...ROADS.vertical.map((c) => c + roadW / 2), WORLD.width - 60];
-  const ys = [60, ...ROADS.horizontal.map((c) => c + roadW / 2), WORLD.height - 60];
-  // Block columns are [edge, next road edge]; park block is column 2, row 1.
-  for (let col = 0; col < xs.length - 1; col += 1) {
-    for (let row = 0; row < ys.length - 1; row += 1) {
-      const x0 = xs[col];
-      const x1 = xs[col + 1];
-      const y0 = ys[row];
-      const y1 = ys[row + 1];
+  // Block edges: each block runs from one road's far edge to the next road's
+  // near edge, so no building ever overlaps the asphalt.
+  const blockXs = [];
+  {
+    let start = 60;
+    for (const c of ROADS.vertical) {
+      blockXs.push([start, c - roadW / 2]);
+      start = c + roadW / 2;
+    }
+    blockXs.push([start, WORLD.width - 60]);
+  }
+  const blockYs = [];
+  {
+    let start = 60;
+    for (const c of ROADS.horizontal) {
+      blockYs.push([start, c - roadW / 2]);
+      start = c + roadW / 2;
+    }
+    blockYs.push([start, WORLD.height - 60]);
+  }
+  for (let col = 0; col < blockXs.length; col += 1) {
+    for (let row = 0; row < blockYs.length; row += 1) {
+      const x0 = blockXs[col][0];
+      const x1 = blockXs[col][1];
+      const y0 = blockYs[row][0];
+      const y1 = blockYs[row][1];
       if (x1 - x0 < 120 || y1 - y0 < 120) continue;
       // The park: one whole block of green, trees and a pond.
       if (col === 2 && row === 1) {
@@ -65,7 +82,7 @@ export function buildCity(rng) {
   return {
     buildings,
     trees,
-    park: { x: xs[2], y: ys[1], w: xs[3] - xs[2], h: ys[2] - ys[1] },
+    park: { x: blockXs[2][0], y: blockYs[1][0], w: blockXs[2][1] - blockXs[2][0], h: blockYs[1][1] - blockYs[1][0] },
     beach: { y: 2190 },
   };
 }

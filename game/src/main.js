@@ -27,6 +27,9 @@ const world = createWorld(createRandom(seed));
 const renderer = createRenderer(canvas);
 const audio = createAudio();
 
+// A handle for play-testing and debugging from the browser console.
+window.__neon = world.state;
+
 /** Load the save (cash, missions done) or start fresh. */
 function readSave() {
   try {

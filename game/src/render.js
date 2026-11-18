@@ -312,7 +312,7 @@ export function createRenderer(canvas) {
     context.arc(x, y, 6, 0, Math.PI * 2);
     context.fill();
     plainText(target.label, x, y - 52 + bounce, 14, '#ffffff', 'center', 'alphabetic');
-    // A guiding line from the player to the marker when it is off screen.
+    // A guiding arrow from the player toward the marker when it is off screen.
     const p = state.player;
     if (x < -20 || x > FIELD.width + 20 || y < -20 || y > FIELD.height + 20) {
       const dx = target.x - p.x;
@@ -320,13 +320,18 @@ export function createRenderer(canvas) {
       const len = Math.hypot(dx, dy) || 1;
       const ex = FIELD.width / 2 + (dx / len) * 300;
       const ey = FIELD.height / 2 + (dy / len) * 220;
+      const ang = Math.atan2(dy, dx);
+      context.save();
+      context.translate(ex, ey);
+      context.rotate(ang);
       context.fillStyle = PALETTE.marker;
       context.beginPath();
-      context.moveTo(ex, ey - 14);
-      context.lineTo(ex + 11, ey + 6);
-      context.lineTo(ex - 11, ey + 6);
+      context.moveTo(16, 0);
+      context.lineTo(-10, -11);
+      context.lineTo(-10, 11);
       context.closePath();
       context.fill();
+      context.restore();
     }
   }
 
